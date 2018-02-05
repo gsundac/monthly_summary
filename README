@@ -15,4 +15,12 @@ In order to populate the DB for the first time I used the following for loop...
 
 > cd /home/dropbox/monthly_summary/outputs; for i in `ls allhosts-*-*-*.csv`; do mysql -e "use ISS_UNIX_DATA; load data local infile '"$i"'  into table base_data fields terminated by ',' lines terminated by '\n'" -uroot --password=ifa6isa9; done
 
+Base
+The directory structure that is needed for this script to work properly is listed below.
+Highest level directory - monthly_summary
+logs - written to as part of the monthly summary script. 
+outputs - where the reports are written to.  
+tmp - used for transitory files.
+scripts - where the scripts are kept.
+scripts/RETIRED - legacy directory where I churn revised scripts to.
 
