@@ -153,8 +153,9 @@ if [ -f "/etc/nsswitch.conf" ]; then
               if [ $? = 0 ]; then
 	      COMP_ROLE="Not Defined"
               AUTH=Centrify
+	      ZONE=`adinfo --zone | awk -F"Global/" '{print $2}'`
 	      COMP_ROLET=`dzinfo -Cf | egrep 'Computer Role' | awk -F: '{print $NF}' | sort -u`
-              COMP_ROLE=`echo $COMP_ROLET`
+              COMP_ROLE=`echo "("$ZONE")"$COMP_ROLET`
 	      fi
 else
 	AUTH=Files
