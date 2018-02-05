@@ -1,0 +1,18 @@
+After all these years of collecting this stuff, I have finally gotten to the point where I realize a README is in order, if only to keep track of changes and WTF is going on for myself.
+The scripts determine a number of facts about the systems, like hostnames, ip addresses, etc.  
+Recently have added logic to determine if the system is patched to the correct kernel level, and correct issues with uptime (colons were screwing up output and skewing lines...).
+Will need to do a decent job of keeping this up to date as time goes on.
+
+Change Log 
+
+02-05-2018
+Added the scripts to github.  Repository is monthly_summary at github.com
+
+12-12-2016
+Added mysql logic and cleaned up a bunch of stuff in order to get data better normalized.
+The dated reports get added to a Maria DB server on host cheddar.  The logic to do that was added as a one liner in monthly_summary4.bash.
+In order to populate the DB for the first time I used the following for loop...
+
+> cd /home/dropbox/monthly_summary/outputs; for i in `ls allhosts-*-*-*.csv`; do mysql -e "use ISS_UNIX_DATA; load data local infile '"$i"'  into table base_data fields terminated by ',' lines terminated by '\n'" -uroot --password=ifa6isa9; done
+
+

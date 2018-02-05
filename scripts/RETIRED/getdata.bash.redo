@@ -1,0 +1,153 @@
+#! /bin/bash
+PRINTMANIFEST="/opt/ignite/bin/print_manifest -s"
+MACHINFO="/usr/contrib/bin/machinfo"
+CSTM="/usr/sbin/cstm"
+DMIDECODE="/usr/sbin/dmidecode"
+UNAME=`uname`
+HOSTNAME=`hostname| awk -F"." '{print $1}'` 
+UPTIME=`uptime | awk '{print $3}'|sed s/,//g`
+IPADDR=`nslookup \`hostname\` 10.65.64.159 | grep Address: | grep -v \# | grep -v 10.65.64.159 | awk '{print $2}'`
+NWLOC=`echo $IPADDR | awk -F. '{print $1 $2 $3}'`
+DATE=`date +%Y-%m-%d`
+
+case "$NWLOC" in
+
+	1065[0-9][0-9]) LOCATION=MLP;;
+	1065[0-9][0-9][0-9]) LOCATION=MLP;;
+	20734126) LOCATION=MLP-DMZ;;
+	10722[0-9][0-9]) LOCATION=MLP-PL;;
+	10721[5-7][0-9]) LOCATION=MLP-PL-EXA;;
+    	107013[2-3]) LOCATION=MLP-SCADA
+    	;;
+    	10666[0-9]) LOCATION=SEO;;
+    	1066[1-3][2-4][0-9]) LOCATION=SEO-PL;;
+    	106615[2-4]) LOCATION=SEO-PL-EXA;;
+    	107013[6-9]) LOCATION=SEO-SCADA;;
+    	1611412) LOCATION=SEO-DMZ
+	;;
+    	1070[0-32]) LOCATION=ENB2-SCADA
+	;;
+	1070128) LOCATION=REMOTE-PLC-SCADALab
+	;;
+	107064)	LOCATION=REMOTE-EDMTerm-SCADA
+	;;
+	10170[0-9]) LOCATION=VPC
+	;;
+	10170[0-9][0-9]) LOCATION=VPC
+	;;
+	10179[0-9]) LOCATION=THOROLD
+	;;
+	10179[0-9][0-9]) LOCATION=THOROLD
+	;;
+    	*)	LOCATION=REMOTE
+    	;;
+    esac
+
+## Figure out auth mechanism and count root equivs if auth is centrify
+
+if [ -f /etc/nsswitch.conf ]; then
+        sed -n '/^passwd/p' /etc/nsswitch.conf | grep -i files > /dev/null 2>&1
+                if [ $? = 0 ]; then
+                AUTH=Files
+                fi
+        sed -n '/^passwd/p' /etc/nsswitch.conf | grep -i nis > /dev/null 2>&1
+                if [ $? = 0 ]; then
+                AUTH=NIS
+                fi
+        sed -n '/^passwd/p' /etc/nsswitch.conf | grep -i centrify > /dev/null 2>&1
+                if [ $? = 0 ]; then
+                AUTH=Centrify
+                fi
+     else
+        AUTH=Files
+fi
+if [ $AUTH="Centrify" ]; then
+	for i in `adquery user  | awk -F: '{print $1}' | egrep -v "sundac|gorodet|chui|bodnar|carpend4|kuresh|mcgill|sysmonit|sysdscvr"`;
+	do
+	HOSTNAME=`hostname` 
+	ROOTEQ=`dzinfo -c $i | egrep "root_equivalent"| sed 's/*//g'`
+	if [ -n "$ROOTEQ" ]; then
+	echo $i \:
+	fi
+	done
+
+
+
+case "$UNAME" in
+
+ HP-UX) MODEL=`model`;
+	SERIAL=`getconf MACHINE_SERIAL`;
+	if [ -z "$SERIAL" ]; then
+
+		if [ -e "$MACHINFO" ]; then
+			SERIAL=`$MACHINFO |  grep "Machine serial number" | awk -F: '{print $2}'`
+		else
+			SERIAL=`$PRINTMANIFEST | grep "Serial number" | awk -F\: '{print $2}'`
+		fi
+	fi
+
+	PROCS=`/sbin/ioscan -k | grep processor | wc -l`
+	MEM=`echo "selclass qualifier memory;info;wait;infolog"| $CSTM | grep " System Total (MB)" | awk '{print $(NF)}'`
+	if [ -n "$MEM" ]; then
+		MEMG=`echo "$MEM/1024" | bc`
+		else
+		MEMG=0
+	fi
+	NUNAME=`uname -r`;
+	APPGUESS=`cat /etc/snmpd.conf | grep ^contact: | awk -F= '{print $3}'`
+        echo "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $UNAME , $NUNAME , $MODEL , $APPGUESS , $IPADDR , $SERIAL , $PROCS , $MEMG ";;
+
+ Linux)	MODEL=`$DMIDECODE | grep -m 1 "Product Name" | awk -F\: '{print $2}'` ; 
+	SERIAL=`$DMIDECODE | grep -m 1 "Serial Number" | awk -F\: '{print $2}'` ; 
+   		if [ -f /etc/system-release ]; then
+		VERSION=`cat /etc/system-release`
+		elif [ -f /etc/enterprise-release ]; then
+		VERSION=`cat /etc/enterprise-release`
+		elif [ -f /etc/oracle-release ]; then
+		VERSION=`cat /etc/oracle-release`
+		elif [ -f /etc/redhat-release ]; then
+		VERSION=`cat /etc/redhat-release`
+		elif [ -f /etc/SuSE-release ]; then
+		VERSION=`cat /etc/SuSE-release| grep Linux`
+		else
+		VERSION="Unspecified Linux"
+		fi
+	NUNAME=`uname -r`;
+	CPROC=`dmidecode -t4 | grep "Core Count" | sort -u | awk '{print $3}'`
+	PROCS=`dmidecode -t4 | grep "Socket Designation" | sort -u | wc -l`
+	PROC_TYPE=`cat /proc/cpuinfo | grep "model name" | sort -u | awk -F\: '{print $2}'`
+	MEM=`cat /proc/meminfo | grep MemTotal | awk '{print $2}'`
+	MEMG=`echo "$MEM/1000/1000" | bc`
+	APPGUESS=`cat /etc/snmp/snmpd.conf | grep ^syscontact | awk -F= '{print $3}'`
+        echo "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $VERSION , $NUNAME , $MODEL , $APPGUESS , $IPADDR , ${SERIAL:0:15} , $PROCS x $CPROC ($PROC_TYPE) , $MEMG ";;
+
+# SunOS) MODEL=`uname -i | sed s/SUNW,//g`;
+# SunOS) MODEL=`prtdiag | grep ^"System Configuration:" | awk -F: '{print $2}' | sed 's/Oracle Corporation  sun4.//g'`;
+ 
+  SunOS) if [ -c /dev/zconsole ]; then
+                MOD_SUFFIX="(NGC)"	
+		MODEL="Non Global Container"
+	else 
+ 		MODEL=`prtdiag | grep ^"System Configuration:" | awk -F: '{print $2}' | sed 's/Oracle Corporation  sun4.//g'| sed 's/Sun Microsystems  sun4.//g'|sed 's/SPARC Enterprise//g'|sed 's/Sun//g'`;
+# 		MODEL=`prtdiag | grep ^"System Configuration:" | awk -F: '{print $2}'`;
+        fi
+
+	if [ -f "/usr/sbin/sneep" ]; then
+		SERIAL=`/usr/sbin/sneep | awk '{print $1}'`
+	else
+		SERIAL="Not Detected"
+	fi
+
+	NUNAME=`uname -r`; 
+	VUNAME=`uname -v`;
+	PROCS=`psrinfo -p`
+	CPROC=`psrinfo -pv | grep "virtual processors" | awk '{print $5}'| sort -u| tr '\n' ' '`
+	PROC_TYPE=`psrinfo -pv | grep SPARC | awk '{print $1 "@"$(NF-1)$(NF)}' | sed 's/)//g'| sort -u`
+	MEM=`prtconf 2> /dev/null | grep "Memory size" | awk '{print $3}'`
+	MEMG=`echo "$MEM/1000" | bc`
+	APPGUESS=`egrep "syscontact * OS=UNIX" /etc/sma/snmp/snmpd.conf | awk -F= '{print $3}'`
+	echo "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $UNAME $NUNAME, $VUNAME , $MODEL $MOD_SUFFIX , $APPGUESS , $IPADDR , $SERIAL , $PROCS x $CPROC ($PROC_TYPE) , $MEMG  ";;
+
+ *)      printf SOMETHINGELSE;;
+esac
+

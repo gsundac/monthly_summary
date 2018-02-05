@@ -1,0 +1,3 @@
+Monthly Summary is attached for this month.  Previous months summaries as well as host specifics are available at \\hs\unix_home$\dropbox\monthly_summary\outputs.
+
+This mailout originates from edrv0000's root crontab.
