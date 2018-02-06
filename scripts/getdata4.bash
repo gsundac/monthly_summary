@@ -324,8 +324,8 @@ case "$UNAME" in
 
   AIX) 
 	INCEPTION=NA
-#       MODEL=`uname -M| sed s/,/-/g`;
-        MODEL="$SMODEL $VIOS";
+        PMODEL=`uname -M| sed s/,/-/g`;
+#       MODEL="$SMODEL $VIOS";
         SERIAL=`uname -m`;
         VUNAME=`uname -v`;
 	SUNAME=`uname -sv`;
@@ -355,8 +355,10 @@ case "$UNAME" in
 	LPAR=`prtconf -L | grep -v NULL`
 	if [ -n "$LPAR" ]; then
 		SMODEL=LPAR
+        	MODEL="$SMODEL $VIOS on $PMODEL"
 	else
 		SMODEL=`uname -M| sed s/,/-/g`
+		MODEL=$SMODEL
 	fi
         APPGUESS=`egrep "OS=UNIX Server Support" /etc/snmpd.conf | awk -F= '{print $3}'`;;
 		
