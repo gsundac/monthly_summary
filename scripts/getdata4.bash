@@ -240,18 +240,19 @@ case "$UNAME" in
  Linux)	MODEL=`$DMIDECODE | grep -m 1 "Product Name" | awk -F\: '{print $2}'` ; 
 	SERIAL=`$DMIDECODE | grep -m 1 "Serial Number" | awk -F\: '{print $2}'` ; 
    		if [ -f /etc/system-release ]; then
-		VERSION=`cat /etc/system-release`
+		TVERSION=`cat /etc/system-release`
 		elif [ -f /etc/enterprise-release ]; then
-		VERSION=`cat /etc/enterprise-release`
+		TVERSION=`cat /etc/enterprise-release`
 		elif [ -f /etc/oracle-release ]; then
-		VERSION=`cat /etc/oracle-release`
+		TVERSION=`cat /etc/oracle-release`
 		elif [ -f /etc/redhat-release ]; then
-		VERSION=`cat /etc/redhat-release`
+		TVERSION=`cat /etc/redhat-release`
 		elif [ -f /etc/SuSE-release ]; then
-		VERSION=`cat /etc/SuSE-release| grep Linux`
+		TVERSION=`cat /etc/SuSE-release| grep Linux`
 		else
-		VERSION="Unspecified Linux"
+		TVERSION="Unspecified Linux"
 		fi
+	VERSION=`echo $TVERSION | sed 's/Red Hat Enterprise Linux/RHEL/g'| sed 's/release //g'`
 #	ROOTPAR=`df / | awk '{print $1}' | grep "/"`
 #	INCEPTION=`tune2fs -l $ROOTPAR | grep created`
 	INCEPTION=`dmidecode | grep "Release Date:"| awk -F: '{print $2}'`
