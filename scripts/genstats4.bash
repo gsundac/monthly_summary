@@ -7,20 +7,20 @@ DATAFILE="$RES_PATH/$RESULTS"
 
 # Total Server Summary
 HPUX_TOTAL=`grep HP-UX  $DATAFILE | wc -l`
-RHEL_TOTAL=`grep "Red Hat Enterprise Linux" $DATAFILE | wc -l`
+RHEL_TOTAL=`egrep "RHEL|Red Hat" $DATAFILE | wc -l`
 ORAC_TOTAL=`egrep "Oracle Linux|Enterprise Linux Enterprise Linux|Oracle VM" $DATAFILE | wc -l`
 SUNOS_TOTAL=`grep "SunOS" $DATAFILE | wc -l`
 AIX_TOTAL=`grep "AIX" $DATAFILE | wc -l`
-OTHEROS=`egrep -v "^$|SunOS|Red Hat Enterprise Linux|HP-UX|Oracle Linux|Enterprise Linux Enterprise Linux|Oracle VM|AIX" $DATAFILE | wc -l`
+OTHEROS=`egrep -v "^$|SunOS|RHEL|HP-UX|Oracle Linux|Enterprise Linux Enterprise Linux|Oracle VM|AIX" $DATAFILE | wc -l`
 TOTALOSI=`echo "$HPUX_TOTAL + $RHEL_TOTAL + $SUNOS_TOTAL + $ORAC_TOTAL + $AIX_TOTAL + $OTHEROS" | bc`
 
 # Virtual Server Summary
 VHPUX_TOTAL=`grep HP-UX $DATAFILE | grep "VMWare" | wc -l`
-VRHEL_TOTAL=`grep "Red Hat Enterprise Linux" $DATAFILE |  grep "VMware Virtual Platform" | wc -l`
-VORAC_TOTAL=`egrep "Oracle| Enterprise Linux Enterprise Linux" $DATAFILE | egrep -v "Red Hat|SunOS" |  egrep "VMware Virtual Platform|HVM domU" | wc -l`
+VRHEL_TOTAL=`egrep "RHEL|Red Hat" $DATAFILE |  grep "VMware Virtual Platform" | wc -l`
+VORAC_TOTAL=`egrep "Oracle Linux| Enterprise Linux Enterprise Linux" $DATAFILE | egrep -v "RHEL|Red Hat|SunOS" |  egrep "VMware Virtual Platform|HVM domU" | wc -l`
 VSUNOS_TOTAL=`grep "SunOS" $DATAFILE | grep NGC | wc -l`
 VAIX_TOTAL=`grep "AIX" $DATAFILE | grep LPAR | wc -l`
-VOTHEROS=`egrep -v "^$|SunOS|Red Hat Enterprise Linux|HP-UX|Enterprise Linux Enterprise" $DATAFILE | grep "VMware Virtual Platform" | wc -l`
+VOTHEROS=`egrep -v "^$|SunOS|RHEL|Red Hat|HP-UX|Oracle Linux|Enterprise Linux Enterprise" $DATAFILE | grep "VMware Virtual Platform" | wc -l`
 VTOTALOSI=`echo "$VHPUX_TOTAL + $VRHEL_TOTAL + $VSUNOS_TOTAL + $VORAC_TOTAL + $VAIX_TOTAL + $VOTHEROS" | bc`
 
 # Phyiscal Server Summary
@@ -35,11 +35,11 @@ PTOTALOSI=`echo "$PHPUX_TOTAL + $PRHEL_TOTAL + $PSUNOS_TOTAL + $PORAC_TOTAL + $P
 
 # Age Summary  
 OHPUX_TOTAL=`grep HP-UX $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
-ORHEL_TOTAL=`grep "Red Hat Enterprise Linux" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
-OORAC_TOTAL=`grep "Oracle" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
+ORHEL_TOTAL=`egrep "RHEL|Red Hat" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
+OORAC_TOTAL=`grep "Oracle Linux" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
 OSUNOS_TOTAL=`grep "SunOS" $DATAFILE | grep -v "NGC" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
 OAIX_TOTAL=`grep "AIX" $DATAFILE | grep -v "LPAR" | awk '{print $(NF)}' | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
-OOTHEROS=`egrep -v "^$|SunOS|Red Hat Enterprise Linux|HP-UX" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' |grep -v \- | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
+OOTHEROS=`egrep -v "^$|SunOS|RHEL|Red Hat|HP-UX" $DATAFILE | grep -v "VMware" | awk '{print $(NF)}' |grep -v \- | egrep "4[8-9]|[5-9][0-9]|[1-9][0-9][0-9]" | wc -l`
 OTOTALOSI=`echo "$OHPUX_TOTAL + $ORHEL_TOTAL + $OORAC_TOTAL + $OSUNOS_TOTAL + $OAIX_TOTAL + $OOTHEROS" | bc`
 
 # Location Summary - Added VPC and THOR
