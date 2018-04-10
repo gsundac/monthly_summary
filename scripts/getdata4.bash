@@ -98,7 +98,7 @@ AIX="1737A_71X"
 
 # NOTE - all the variables below in current kernels have to be defined or the HPUX in GD will puke on the script
 CURRENT_KERNELS="$RHEL7|$RHEL6|$RHEL5_32|$OEL6UEK|$OEL5UEK|$OEL6|$OEL5|$HPUX1131|$HPUX1123|$HPUX1111|$SOLARIS10|$SOLARIS8|$SOLARIS11|$AIX"
-OBSOLETE="B.11.11|B.11.23|5.8|SUSE|WS release 4|AIX 6|Tikanga|Carthage"
+OBSOLETE="B.11.11|B.11.23|5.8|SUSE|WS release 4|AIX 6|Tikanga|Carthage|2.6.18-412|2.6.39-400.286.3.el5uek|2.6.18-419.el5"
 
 case "$NWLOC" in
 
