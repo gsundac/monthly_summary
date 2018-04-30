@@ -1,6 +1,7 @@
 #! /bin/sh
 ### To test this out....
 ###  pssh -O PasswordAuthentication=no -O StrictHostKeyChecking=no -P -t20 -H vprv0017 -I< /home/sundacg/monthly_summary/scripts/getdata4.bash
+###  Another hint...initialize your variables before you try to echo them out, or HPUX has issues.
 PRINTMANIFEST="/opt/ignite/bin/print_manifest -s"
 MACHINFO="/usr/contrib/bin/machinfo"
 CSTM="/usr/sbin/cstm"
@@ -206,7 +207,13 @@ PUPPETFILE='/opt/puppetlabs/bin/puppet'
           ENBSUBSERVICE=`cat $FACTSFILE | grep enbsubservice | awk -F= '{print $2}'|sed 's/:/\|/g'` ;
           ENBSTATUS=`cat $FACTSFILE | grep enbstatus | awk -F= '{print $2}'|sed 's/:/\|/g'` ; 
           ENBPTCHEXMPTN=`cat $FACTSFILE | grep enbptchexmptn | awk -F= '{print $2}'|sed 's/:/\|/g'`
-        fi
+	else
+	  ENBAPPSUPPORT='NA' ;
+	  ENBSERVICE='NA' ;
+	  ENBSUBSERVICE='NA' ;
+	  ENBSTATUS='NA'; 
+	  ENBPTCHEXMPTN='NA' 
+	fi
 
 case "$UNAME" in
 
