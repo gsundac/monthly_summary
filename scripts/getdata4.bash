@@ -2,6 +2,8 @@
 ### To test this out....
 ###  pssh -O PasswordAuthentication=no -O StrictHostKeyChecking=no -P -t20 -H vprv0017 -I< /home/sundacg/monthly_summary/scripts/getdata4.bash
 ###  Another hint...initialize your variables before you try to echo them out, or HPUX has issues.
+## Initializing all these...
+DATE=HOSTNAME=LOCATION=UPTIME=AUTH=VERSION=NUNAME=MODEL=APPGUESS=ENBAPPSUPPORT=ENBSERVICE=ENBSUBSERVICE=ENBSTATUS=ENBPTCHEXMPTN=IPADDR=SERIAL=PROCS=CPROC=PROC_TYPE=MEMG=USERS=UP2DATE=COMP_ROLE=FACTS=PUPPET=ORA_PROCS=ORAGUESS=INCEPTION=" "
 PRINTMANIFEST="/opt/ignite/bin/print_manifest -s"
 MACHINFO="/usr/contrib/bin/machinfo"
 CSTM="/usr/sbin/cstm"
@@ -155,6 +157,10 @@ case "$NWLOC" in
 ## Figure out auth mechanism and count root equivs if auth is centrify
 COMP_ROLE="NA"   #Pre-populating this so it gets filled in regardless of what happens in the centrify section
 if [ -f "/etc/nsswitch.conf" ]; then
+	sed -n '/^passwd/p' /etc/nsswitch.conf > /dev/null 2>&1
+              if [ $? = 0 ]; then
+              AUTH=MF
+              fi
 	sed -n '/^passwd/p' /etc/nsswitch.conf | grep -i files > /dev/null 2>&1
               if [ $? = 0 ]; then
               AUTH=Files
