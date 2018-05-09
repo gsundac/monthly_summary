@@ -1,3 +1,4 @@
+RESULTSTMP='hoststmp.csv'
 RESULTS='hosts.csv'
 RES_PATH='/home/sundacg/monthly_summary/outputs'
 SCRIPTS='/home/sundacg/monthly_summary/scripts'
@@ -5,8 +6,11 @@ HOSTS_LIST='/home/sundacg/monthly_summary/tmp/hosts_summary.list'
 DATE=`date +%Y-%m-%d`
 SSH='/usr/bin/ssh'
 BODY_FILE='/home/sundacg/monthly_summary/scripts/message_body.txt'
+> $RES_PATH/$RESULTSTMP
 > $RES_PATH/$RESULTS
 $SCRIPTS/run_remote4.bash >> $RES_PATH/$RESULTS
+# $SCRIPTS/run_remote4.bash >> $RES_PATH/$RESULTSTMP
+# sort -u $RES_PATH/$RESULTSTMP >> $RES_PATH/$RESULTS
 $SCRIPTS/datecalc.bash | grep -v -e '^$' > $RES_PATH/allhosts-$DATE.csv
 $SCRIPTS/genstats4.bash > $RES_PATH/summary-$DATE.csv
 
