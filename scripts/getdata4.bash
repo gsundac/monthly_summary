@@ -201,6 +201,7 @@ PUPPETFILE='/opt/puppetlabs/bin/puppet'
 
         if [ -f $PUPPETFILE ]; then
           PUPPET=Y
+	  /opt/puppetlabs/bin/puppet agent -t --noop >/dev/null 2>&1
                 else
           PUPPET=N
         fi
