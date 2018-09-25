@@ -19,6 +19,8 @@ for i in `cat $INFILE`; do nslookup $i | grep Name|awk '{print $2}'; done > $INF
 sort -u $INFILE_RESOLVEDTMP > $INFILE_RESOLVED
 #eval `ssh-agent`
 ssh-add /home/sundacg/.ssh/id_zeus_rsa > /dev/null 2>&1
+ssh-add /home/sundacg/.ssh/id_pezu0100 > /dev/null 2>&1
+ssh-add /home/sundacg/.ssh/id_pezlnix200 > /dev/null 2>&1
 # ssh-add /home/sundacg/.ssh/id_rsa_edrv0000 > /dev/null 2>&1
 # $SSH -l root -q algernon '/home/gregorsc/algernon4gord.sh'| grep -v authordate > $HOSTS_LIST
 $PSSH $PSSH_OPTIONS -h $INFILE_RESOLVED -I< $CMD | egrep -v  "SUCCESS|FAILURE" | awk -F: '{print $2}' >> $TMP_FILE

@@ -3,7 +3,7 @@
 ###  pssh -O PasswordAuthentication=no -O StrictHostKeyChecking=no -P -t20 -H vprv0017 -I< /home/sundacg/monthly_summary/scripts/getdata4.bash
 ###  Another hint...initialize your variables before you try to echo them out, or HPUX has issues.
 ## Initializing all these...
-DATE=HOSTNAME=LOCATION=UPTIME=AUTH=VERSION=NUNAME=MODEL=APPGUESS=ENBAPPSUPPORT=ENBSERVICE=ENBSUBSERVICE=ENBSTATUS=ENBPTCHEXMPTN=IPADDR=SERIAL=PROCS=CPROC=PROC_TYPE=MEMG=USERS=UP2DATE=COMP_ROLE=FACTS=PUPPET=ORA_PROCS=ORAGUESS=INCEPTION=" "
+DATE=HOSTNAME=LOCATION=UPTIME=AUTH=VERSION=NUNAME=MODEL=APPGUESS=ENBAPPSUPPORT=ENBSERVICE=ENBSUBSERVICE=ENBSTATUS=ENBPTCHEXMPTN=IPADDR=SERIAL=PROCS=CPROC=PROC_TYPE=MEMG=USERS=UP2DATE=COMP_ROLE=FACTS=PUPPET=ORA_PROCS=ORAGUESS=INCEPTION="-"
 PRINTMANIFEST="/opt/ignite/bin/print_manifest -s"
 MACHINFO="/usr/contrib/bin/machinfo"
 CSTM="/usr/sbin/cstm"
@@ -19,6 +19,7 @@ IPADDR=`nslookup $HOSTNAME | grep Address: | grep -v \# | grep -v $RESOLVER | aw
 NWLOC=`echo $IPADDR | awk -F. '{print $1 $2 $3}'`
 DATE=`date +%Y-%m-%d`
 ORA_PROCS=`ps -ef | grep -i oracle | grep -v grep|wc -l `
+SNMPD_PROCS=`ps -ef | grep -i snmpd | grep -v grep|wc -l `
 
 # For Oracle Audit...take a guess at what oracle product the server is running..
 AM_I_ORADB=`ps -ef | egrep -v "bash|grep" | egrep "ora_pmon|asm_pmon|tnslsnr" 1> /dev/null ; echo $?`
@@ -79,29 +80,29 @@ SCREWY=`echo $UPTIMEA | grep ":"`
  
 ##Q1_2016_CURRENT_KERNELS="2.6.18-409.el5|2.6.32-573.22.1.el6.x86_64|2.6.32-400.26.3.el5uek|2.6.39-400.277.1.el5uek|2.6.18-409.el5|on10-patch20160217152310|2.6.32-400.26.3.el5uek|2.6.39-400.215.9.el5uek| 2.6.39-400.277.1.el6uek.x86_64|B.11.31.1303.390|B.11.31.1603.421a|B.11.23.1012.086a|B.11.11.0912.483"
 
-# RHEL7="3.10.0-693.2.2.el7.x86_64"  Q4 2017
-RHEL7="3.10.0-693.21.1.el7.x86_64"
-RHEL6="2.6.32-696.10.3.el6.x86_64"    # Q4-2017 Value
-# RHEL6="2.6.32-696.el6.x86_64"    # Q2-2017 Value
-RHEL5_32="2.6.18-419.el5PAE"
-RHEL5_64="2.6.18-419.el5"
-# OEL6UEK="2.6.39-400.284.2.el6uek" Q4-2017
-OEL6UEK="4.1.12-103.7.1.el6uek.x86_64"
-OEL5UEK="2.6.39-400.286.3.el5uek"
+# RHEL7="3.10.0-693.21.1.el7.x86_64"  # Q2-2018 Value
+RHEL7="3.10.0-862.9.1.el7.x86_64"  # Q4 2018
+# RHEL6="2.6.32-696.23.1.el6.x86_64"    # Q2-2018 Value
+RHEL6="2.6.32-754.el6.x86_64"    # Q4-2018 Value
+RHEL5_32="Depricated"    #  Keep this in or HPUX will have issues.
+OEL6UEK="2.6.39-400.298.3.el6uek.x86_64"
+OEL5UEK="2.6.39-400.297.3.el5uek"
 OEL6="2.6.32-642.4.2.el6"
 OEL5="2.6.18-412"
-# HPUX1131="B.11.31.1609.424"
-HPUX1131="B.11.31.1709.431"
+HPUX1131="B.11.31.1803.435d"
 HPUX1123="Depricated"
 HPUX1111="Depricated"
-SOLARIS10="on10-patch20170424132433"
+SOLARIS10="on10-patch20170918140018"
 SOLARIS8="Depricated"
-SOLARIS11="0.175.3.24.0.2.0"
-AIX="1737A_71X"
+SOLARIS11="0.175.3.32.0.4.0"
+#AIX7="1737A_71X"   # Q4 2017 value
+AIX7="1809C_71a"
+# AIX6="1712A_61k"  # Q4 2017 value
+AIX6="1712A_61j"  # Just added a j to make it not match
 
 # NOTE - all the variables below in current kernels have to be defined or the HPUX in GD will puke on the script
-CURRENT_KERNELS="$RHEL7|$RHEL6|$RHEL5_32|$OEL6UEK|$OEL5UEK|$OEL6|$OEL5|$HPUX1131|$HPUX1123|$HPUX1111|$SOLARIS10|$SOLARIS8|$SOLARIS11|$AIX"
-OBSOLETE="B.11.11|B.11.23|5.8|SUSE|WS release 4|AIX 6|Tikanga|Carthage|2.6.18-412|2.6.39-400.286.3.el5uek|2.6.18-419.el5"
+CURRENT_KERNELS="$RHEL7|$RHEL6|$RHEL5_32|$OEL6UEK|$OEL5UEK|$OEL6|$OEL5|$HPUX1131|$HPUX1123|$HPUX1111|$SOLARIS10|$SOLARIS8|$SOLARIS11|$AIX7|$AIX6"
+OBSOLETE="B.11.11|B.11.23|5.8|SUSE|WS release 4|Tikanga|Carthage|2.6.18-412|2.6.18-419.el5"
 
 case "$NWLOC" in
 
@@ -201,7 +202,7 @@ PUPPETFILE='/opt/puppetlabs/bin/puppet'
 
         if [ -f $PUPPETFILE ]; then
           PUPPET=Y
-	  /opt/puppetlabs/bin/puppet agent -t --noop >/dev/null 2>&1
+#	  /opt/puppetlabs/bin/puppet agent -t --noop >/dev/null 2>&1
                 else
           PUPPET=N
         fi
@@ -225,7 +226,12 @@ PUPPETFILE='/opt/puppetlabs/bin/puppet'
 case "$UNAME" in
 
  HP-UX) MODEL=`model`;
-
+	if [ -f /opt/sfm/bin/CIMUtil ]; then
+		OOBADDR=`/opt/sfm/bin/CIMUtil -e root/cimv2 HP_ManagementProcessor | grep IPAddress | awk -F: '{print $2}'`
+	else 
+		OOBADDR="NA"
+	fi
+	BITS=`getconf KERNEL_BITS`
 	SERIAL=`getconf MACHINE_SERIAL`;
 	if [ -z "$SERIAL" ]; then
 
@@ -247,7 +253,7 @@ case "$UNAME" in
 	fi
         
 	KERNEL_LEVEL=`/usr/sbin/swlist -l bundle | grep -Ei 'GOLD|QPK'|grep -i base | awk '{print $2}'`;
-        CURRENT=`echo $KERNEL_LEVEL | egrep "$CURRENT_KERNELS"`
+        CURRENT=`echo $KERNEL_LEVEL | grep "$CURRENT_KERNELS"`
 	DEPRICATED=`echo $RUNAME | egrep "$OBSOLETE"`
         if [ -n "$CURRENT" ]; then
                 UP2DATE="Y"
@@ -265,6 +271,13 @@ case "$UNAME" in
 
 
  Linux)	MODEL=`$DMIDECODE | grep -m 1 "Product Name" | awk -F\: '{print $2}'` ; 
+	HPONCFG=`which hponcfg`
+#	if [ -f /usr/sbin/hponcfg ]; then
+	if [ -n $HPONCFG ]; then
+		OOBADDR=`hponcfg -w /tmp/tmpfile 1> /dev/null; grep "\<IP_ADDRESS VALUE =" /tmp/tmpfile | awk '{print $4}' | sed 's/\"//g'| sed 's/\/>//g'`
+		else
+		OOBADDR='NA'
+		fi
 	SERIAL=`$DMIDECODE | grep -m 1 "Serial Number" | awk -F\: '{print $2}'` ; 
    		if [ -f /etc/system-release ]; then
 		TVERSION=`cat /etc/system-release`
@@ -284,6 +297,7 @@ case "$UNAME" in
 #	INCEPTION=`tune2fs -l $ROOTPAR | grep created`
 	INCEPTION=`dmidecode | grep "Release Date:"| awk -F: '{print $2}'`
 	KERNEL_LEVEL=`uname -r`;
+	BITS=`uname -i`;
 	PAE=`uname -r | grep PAE`;
 
 	if [ -n "$PAE" ]; then
@@ -312,11 +326,13 @@ case "$UNAME" in
 	#APPGUESS=`cat /etc/snmp/snmpd.conf | grep ^syscontact | awk -F= '{print $3}'`;;
 	APPGUESS=`cat /etc/snmp/snmpd.conf | grep "^syscontact *OS=" | awk -F= '{print $3}'`;;
 
-  SunOS) if [ -c /dev/zconsole ]; then
+  SunOS) OOBADDR='NA'
+	if [ -c /dev/zconsole ]; then
 		MODEL="NGC"
 	else 
  		MODEL=`prtdiag | grep ^"System Configuration:" | awk -F: '{print $2}' | sed 's/Oracle Corporation  sun4.//g'| sed 's/Sun Microsystems  sun4.//g'|sed 's/SPARC Enterprise//g'|sed 's/Sun//g'`;
         fi
+	BITS=`isainfo -b`
 	INCEPTION=`ls -lE /var/sadm/system/logs/install_log | awk '{print $6}'`
 
 	if [ -f "/usr/sbin/sneep" ]; then
@@ -350,8 +366,9 @@ case "$UNAME" in
 	MEMG=`echo "$MEM/1024" | bc`
 	APPGUESS=`egrep "OS=UNIX Server Support" /etc/sma/snmp/snmpd.conf | awk -F= '{print $3}'`;;
 
-  AIX) 
+  AIX)  OOBADDR='NA'
 	INCEPTION=NA
+	BITS=`bootinfo -y`
         PMODEL=`uname -M| sed s/,/-/g`;
 #       MODEL="$SMODEL $VIOS";
         SERIAL=`uname -m`;
@@ -394,6 +411,5 @@ case "$UNAME" in
  *)      printf SOMETHINGELSE;;
 esac
 
-# Uncomment below to get oracle procs...after editting the monthly_sumary file.
-#echo      "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $VERSION , $NUNAME , $MODEL , $APPGUESS , $IPADDR , $SERIAL , $PROCS , $CPROC , $PROC_TYPE , $MEMG , $USERS , $UP2DATE , $COMP_ROLE , $ORA_PROCS , $ORAGUESS "
-echo      "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $VERSION , $NUNAME , $MODEL , $APPGUESS , $ENBAPPSUPPORT , $ENBSERVICE, $ENBSUBSERVICE , $ENBSTATUS , $ENBPTCHEXMPTN , $IPADDR , $SERIAL , $PROCS , $CPROC , $PROC_TYPE , $MEMG , $USERS , $UP2DATE , $COMP_ROLE , $FACTS , $PUPPET , $ORA_PROCS , $ORAGUESS , $INCEPTION "
+#echo      "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $VERSION , $NUNAME , $MODEL , $APPGUESS , $ENBAPPSUPPORT , $ENBSERVICE, $ENBSUBSERVICE , $ENBSTATUS , $ENBPTCHEXMPTN , $IPADDR , $SERIAL , $PROCS , $CPROC , $PROC_TYPE , $MEMG , $USERS , $UP2DATE , $COMP_ROLE , $FACTS , $PUPPET , $ORA_PROCS , $ORAGUESS , $INCEPTION "
+echo      "$DATE , $HOSTNAME , $LOCATION , $UPTIME , $AUTH , $VERSION , $NUNAME , $MODEL , $APPGUESS , $ENBAPPSUPPORT , $ENBSERVICE, $ENBSUBSERVICE , $ENBSTATUS , $BITS , $IPADDR , $SERIAL , $PROCS , $CPROC , $PROC_TYPE , $MEMG , $USERS , $UP2DATE , $COMP_ROLE , $FACTS , $PUPPET , $ORA_PROCS , $ORAGUESS , $INCEPTION , $OOBADDR "
